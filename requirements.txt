@@ -1,0 +1,6 @@
+discord.py[voice]
+asyncio
+psutil
+timeago==1.0.13
+aiohttp>=3.6.0,<3.8.0
+youtube_dl
