@@ -2,8 +2,9 @@ import json
 import os
 
 try:
-    with open(f"config.json", encoding='utf8') as data:
-        config = json.load(data)
+    with open("config.json", "r", encoding='utf-8-sig') as data:
+        config = json.loads(data.read())
+
 except FileNotFoundError:
     try:
         config = os.environ.get('config')
@@ -11,10 +12,10 @@ except FileNotFoundError:
         raise "Could not load 'config' from env"
     if not config:
         raise "Could not load 'config' from env"
-    with open(f"config.json", mode="w", encoding='utf8') as data:
+    with open(f"config.json", mode="w", encoding='utf-8-sig') as data:
         data.write(config)
-    with open(f"config.json", mode="r", encoding='utf8') as data:
-        config = json.load(data)
+    with open(f"config.json", mode="r", encoding='utf-8-sig') as data:
+        config = json.load(data.read())
 
 import discord
 

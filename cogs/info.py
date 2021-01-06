@@ -35,7 +35,10 @@ class Information(commands.Cog):
         # Do not remove this command, this has to stay due to the GitHub LICENSE.
         # TL:DR, you have to disclose source according to MIT.
         # Reference: https://github.com/AlexFlipnote/discord_bot.py/blob/master/LICENSE
-        await ctx.send(f"**{ctx.bot.user}**'s repo is https://github.com/Omglolyes/discord_bot.py\nand powered by this source code:\nhttps://github.com/AlexFlipnote/discord_bot.py")
+        await ctx.send(f"**{ctx.bot.user}**'s repo is https://github.com/raiden-e/discord\n"
+                       f"and powered by:\n"
+                       f"https://github.com/Rapptz/discord.py\n"
+                       f"https://github.com/AlexFlipnote/discord_bot.py")
 
     @commands.command(aliases=['supportserver', 'feedbackserver'])
     async def botserver(self, ctx):

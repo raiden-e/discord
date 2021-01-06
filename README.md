@@ -3,7 +3,7 @@
 ## Used Libs
 
 - Rapptz's [discord.py](https://github.com/Rapptz/discord.py)
-- Alex Flipnote's [discord.py template](https://discord.gg/bygTeGVUW8) 🍺
+- Alex Flipnote's [discord.py template](https://github.com/AlexFlipnote/discord_bot.py) 🍺
 
 ## Requirements
 

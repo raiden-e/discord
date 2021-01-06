@@ -92,44 +92,6 @@ class Events(commands.Cog):
         # Indicate that the bot has successfully booted up
         print(f'Ready: {self.bot.user} | Servers: {len(self.bot.guilds)}')
 
-    @commands.Cog.listener()
-    async def on_voice_state_update(ctx, member, before, after):
-        audio_source = os.path.join(os.getcwd(), "audio", f"{member}.mp3")
-        if member != ctx.user and os.path.exists(audio_source) and after.channel != None and before.channel != after.channel:
-            print(f"ctx:   {ctx}")
-            print(f"User  {member}\nfrom  {before}\nto    {after}")
-
-            vc = await after.channel.connect()
-            print(f"Connected to: {ctx.voice_clients}")
-
-            try:
-                if os.system() == 'win32':
-                    executable = os.path.join(os.getcwd(), "bin", "ffmpeg.exe")
-                    source = await discord.PCMVolumeTransformer(
-                        discord.FFmpegPCMAudio(audio_source, executable=executable))
-                else:
-                    if not discord.opus.is_loaded():
-                        discord.opus.load_opus(
-                            ctypes.util.find_library('opus'))
-                    source = await discord.FFmpegOpusAudio.from_probe(audio_source)
-            except Exception as e:
-                print(e)
-                await vc.disconnect()
-                return
-            print(source)
-
-            try:
-                await asyncio.sleep(2)
-                print(vc.play(
-                    source,
-                    after=lambda e: print(f'Player error: {e}') if e else None)
-                )
-            except Exception as e:
-                print(str(e))
-
-            await asyncio.sleep(1)
-            await vc.disconnect()
-
 
 def setup(bot):
     bot.add_cog(Events(bot))
