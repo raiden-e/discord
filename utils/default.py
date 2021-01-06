@@ -11,17 +11,10 @@ import timeago as timesince
 def config(filename: str = "config"):
     """ Fetch default config file """
     try:
-        with open(f"{filename}.json", encoding='utf8') as data:
+        with open(f"{filename}.json", encoding='utf-8-sig') as data:
             return json.load(data)
     except FileNotFoundError:
-        try:
-            cfg = os.environ.get('config')
-        except:
-            raise "Could not load 'config' from env"
-        if not cfg:
-            raise "Could not load 'config' from env"
-        with open(f"{filename}.json", mode="w" ,encoding='utf8') as data:
-            data.write(cfg)
+        raise "Could not load config"
 
 
 def traceback_maker(err, advance: bool = True):
