@@ -11,8 +11,8 @@ import timeago as timesince
 def config(filename: str = "config"):
     """ Fetch default config file """
     try:
-        with open(f"{filename}.json", encoding='utf-8-sig') as data:
-            return json.load(data)
+        with open(f"{filename}.json", "r", encoding='utf-8-sig') as data:
+            return json.loads(data.read)
     except FileNotFoundError:
         raise "Could not load config"
 
