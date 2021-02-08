@@ -8,17 +8,14 @@ try:
 except FileNotFoundError:
     try:
         config = os.environ.get('config')
-    except Exception:
+    except:
         raise "Could not load 'config' from env"
-    if not config or config == "":
+    if not config:
         raise "Could not load 'config' from env"
-    with open("config.json", mode="w", encoding='utf-8-sig') as data:
+    with open(f"config.json", mode="w", encoding='utf-8-sig') as data:
         data.write(config)
-    try:
-        with open("config.json", mode="r", encoding='utf-8-sig') as data:
-            config = json.load(data.read())
-    except Exception:
-        config = os.environ.get('config')
+    with open(f"config.json", mode="r", encoding='utf-8-sig') as data:
+        config = json.load(data.read())
 
 import discord
 
