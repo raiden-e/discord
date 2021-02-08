@@ -1,15 +1,20 @@
 from io import BytesIO
 
-from utils import default
+import aiohttp
+from utils import default, news_data
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 
 class Discord_Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = default.config()
+        self.read_news = None
+        self.webhook_url = f"https://discordapp.com/api/webhooks/{self.config['news_guild']}/{self.config['news_token']}"
+        self.news.start()
+        # cached_feed = gist.load(ARANDOMVALUE)
 
     @commands.command()
     @commands.guild_only()
@@ -129,6 +134,35 @@ class Discord_Info(commands.Cog):
         embed.add_field(name="Roles", value=show_roles, inline=False)
 
         await ctx.send(content=f"ℹ About **{user.id}**", embed=embed)
+
+    @tasks.loop(hours=1)
+    async def news(self):
+        '''Get news from fhdo'''
+        carrier = news_data
+        if not self.read_news:
+            self.read_news = news_data.load_read(gist_name="news")
+        latest_read = news_data.get_latest_read(self.read_news)
+        news = carrier.read_current()
+        breaking = []
+        update = False
+        for article in news:
+            if article.date > latest_read:
+                breaking.append(article)
+                update = True
+
+        if not update:
+            return
+
+        async with aiohttp.ClientSession() as session:
+            webhook = discord.Webhook.from_url(
+                self.webhook_url,
+                adapter=discord.AsyncWebhookAdapter(session))
+
+            for article in breaking:
+                await webhook.send(article)
+
+        self.read_news = news
+        news_data.update_read("news", content=news)
 
 
 def setup(bot):

@@ -12,7 +12,7 @@ def config(filename: str = "config"):
     """ Fetch default config file """
     try:
         with open(f"{filename}.json", "r", encoding='utf-8-sig') as data:
-            return json.loads(data.read)
+            return json.loads(data.read())
     except FileNotFoundError:
         raise "Could not load config"
 

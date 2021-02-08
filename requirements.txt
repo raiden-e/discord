@@ -4,3 +4,6 @@ psutil
 timeago==1.0.13
 aiohttp>=3.6.0,<3.8.0
 youtube_dl
+pyGithub
+feedparser >= 5.2.1
+markdownify==0.4.1
