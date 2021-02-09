@@ -1,7 +1,9 @@
+from datetime import datetime
 from io import BytesIO
 
 import aiohttp
 import config
+import pytz
 from utils import default, news_data
 
 import discord
@@ -144,6 +146,8 @@ class Discord_Info(commands.Cog):
         latest_read = news_data.get_latest_read(self.read_news)
         news = carrier.read_current()
         breaking = []
+        tz = pytz.timezone('Europe/Berlin')
+        datestr = datetime.now().astimezone(tz).strftime('%Y-%m-%d %H:%m:%S')
         update = False
         for article in news:
             if article.date > latest_read:
@@ -151,6 +155,7 @@ class Discord_Info(commands.Cog):
                 update = True
 
         if not update:
+            print(f"{datestr}: No new news")
             return
 
         async with aiohttp.ClientSession() as session:
@@ -160,6 +165,7 @@ class Discord_Info(commands.Cog):
 
             for article in breaking:
                 await webhook.send(article)
+                print(f"{datestr}: {article.title}")
 
         self.read_news = news
         news_data.update_read("news", content=news)

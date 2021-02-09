@@ -3,12 +3,12 @@ import binascii
 import codecs
 from io import BytesIO
 
+import config
 from utils import default, http
 
 import discord
 from discord.ext import commands
 from discord.ext.commands.errors import BadArgument
-import config
 
 
 class Encryption(commands.Cog):
