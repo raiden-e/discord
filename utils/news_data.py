@@ -2,11 +2,10 @@ import json
 import time
 from datetime import datetime
 
+import config
 import feedparser
 from github import Github, InputFileContent
 from markdownify import markdownify as md
-
-from . import default
 
 
 class Entry:
@@ -65,8 +64,7 @@ def decoder_entry(entrys):
 
 
 def init():
-    config = default.config()
-    return Github(config['gist_token']).get_gist(config['gist_id'])
+    return Github(config.GIST_TOKEN).get_gist(config.GIST_ID)
 
 
 def load_read(gist_name):

@@ -1,1 +1,1 @@
-worker: python index.py
+bot: ./run.sh

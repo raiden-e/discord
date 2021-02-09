@@ -1,6 +1,7 @@
 import asyncio
 import re
 
+import config
 from utils import default, permissions
 
 import discord
@@ -36,7 +37,6 @@ class ActionReason(commands.Converter):
 class Moderator(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = default.config()
 
     @commands.command()
     @commands.guild_only()
@@ -317,7 +317,7 @@ class Moderator(commands.Cog):
     async def _bots(self, ctx, search=100, prefix=None):
         """Removes a bot user's messages and messages with their optional prefix."""
 
-        getprefix = prefix if prefix else self.config["prefix"]
+        getprefix = prefix if prefix else config.PREFIX
 
         def predicate(m):
             return (m.webhook_id is None and m.author.bot) or m.content.startswith(tuple(getprefix))

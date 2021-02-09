@@ -1,5 +1,3 @@
-import json
-import os
 import time
 import traceback
 from io import BytesIO
@@ -8,13 +6,11 @@ import discord
 import timeago as timesince
 
 
-def config(filename: str = "config"):
+def config(get=False):
     """ Fetch default config file """
-    try:
-        with open(f"{filename}.json", "r", encoding='utf-8-sig') as data:
-            return json.loads(data.read())
-    except FileNotFoundError:
-        raise "Could not load config"
+    import config
+    if get:
+        return config
 
 
 def traceback_maker(err, advance: bool = True):

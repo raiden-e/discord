@@ -6,7 +6,8 @@ import urllib
 from io import BytesIO
 
 import aiohttp
-from utils import argparser, default, http, lists, permissions
+import config
+from utils import argparser, http, lists, permissions
 
 import discord
 from discord.ext import commands
@@ -15,8 +16,7 @@ from discord.ext import commands
 class Fun_Commands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = default.config()
-        self.alex_api_token = self.config["alexflipnote_api"]
+        self.alex_api_token = config.ALEXFLIPNOTE_API
 
     async def randomimageapi(self, ctx, url: str, endpoint: str, token: str = None):
         try:

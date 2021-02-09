@@ -8,12 +8,12 @@ from utils import default, http
 import discord
 from discord.ext import commands
 from discord.ext.commands.errors import BadArgument
+import config
 
 
 class Encryption(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = default.config()
 
     @commands.group()
     async def encode(self, ctx):

@@ -1,6 +1,7 @@
 from io import BytesIO
 
 import aiohttp
+import config
 from utils import default, news_data
 
 import discord
@@ -10,9 +11,8 @@ from discord.ext import commands, tasks
 class Discord_Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = default.config()
         self.read_news = None
-        self.webhook_url = f"https://discordapp.com/api/webhooks/{self.config['news_guild']}/{self.config['news_token']}"
+        self.webhook_url = f"https://discordapp.com/api/webhooks/{config.NEWS_GUILD}/{config.NEWS_TOKEN}"
         self.news.start()
         # cached_feed = gist.load(ARANDOMVALUE)
 

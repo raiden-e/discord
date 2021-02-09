@@ -5,6 +5,7 @@ import sys
 import time
 
 import aiohttp
+import config
 from utils import default, http, permissions
 
 import discord
@@ -14,11 +15,12 @@ from discord.ext import commands
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config = default.config()
         self._last_result = None
 
     def change_config_value(self, value: str, changeto: str):
         """ Change a value from the configs """
+        return -1
+        # Currently not possible
         config_name = "config.json"
         with open(config_name, "r") as jsonFile:
             data = json.load(jsonFile)
@@ -30,7 +32,7 @@ class Admin(commands.Cog):
     @commands.command()
     async def amiadmin(self, ctx):
         """ Are you an admin? """
-        if ctx.author.id in self.config["owners"]:
+        if ctx.author.id in config.owners:
             return await ctx.send(f"Yes **{ctx.author.name}** you are an admin! ✅")
 
         # Please do not remove this part.
@@ -143,10 +145,10 @@ class Admin(commands.Cog):
     @commands.check(permissions.is_owner)
     async def change_playing(self, ctx, *, playing: str):
         """ Change playing status. """
-        status = self.config["status_type"].lower()
+        status = config.status_type.lower()
         status_type = {"idle": discord.Status.idle, "dnd": discord.Status.dnd}
 
-        activity = self.config["activity_type"].lower()
+        activity = config.activity_type.lower()
         activity_type = {"listening": 2, "watching": 3, "competing": 5}
 
         try:
