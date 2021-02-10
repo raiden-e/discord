@@ -4,7 +4,7 @@ from io import BytesIO
 import aiohttp
 import config
 import pytz
-from utils import default, news_data
+from utils import default, news
 
 import discord
 from discord.ext import commands, tasks
@@ -15,7 +15,7 @@ class Discord_Info(commands.Cog):
         self.bot = bot
         self.read_news = None
         self.webhook_url = f"https://discordapp.com/api/webhooks/{config.NEWS_GUILD}/{config.NEWS_TOKEN}"
-        self.news.start()
+        self.news_task.start()
         # cached_feed = gist.load(ARANDOMVALUE)
 
     @commands.command()
@@ -138,18 +138,18 @@ class Discord_Info(commands.Cog):
         await ctx.send(content=f"ℹ About **{user.id}**", embed=embed)
 
     @tasks.loop(hours=1)
-    async def news(self):
+    async def news_task(self):
         '''Get news from fhdo'''
-        carrier = news_data
+        carrier = news
         if not self.read_news:
-            self.read_news = news_data.load_read(gist_name="news")
-        latest_read = news_data.get_latest_read(self.read_news)
-        news = carrier.read_current()
+            self.read_news = news.load_read(gist_name="news")
+        latest_read = news.get_latest_read(self.read_news)
+        potential_news = carrier.read_current()
         breaking = []
         tz = pytz.timezone('Europe/Berlin')
         datestr = datetime.now().astimezone(tz).strftime('%Y-%m-%d %H:%m:%S')
         update = False
-        for article in news:
+        for article in potential_news:
             if article.date > latest_read:
                 breaking.append(article)
                 update = True
@@ -167,8 +167,8 @@ class Discord_Info(commands.Cog):
                 await webhook.send(article)
                 print(f"{datestr}: {article.title}")
 
-        self.read_news = news
-        news_data.update_read("news", content=news)
+        self.read_news = potential_news
+        news.update_read("news", content=news)
 
 
 def setup(bot):
