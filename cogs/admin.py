@@ -32,14 +32,14 @@ class Admin(commands.Cog):
     @commands.command()
     async def amiadmin(self, ctx):
         """ Are you an admin? """
-        if ctx.author.id in config.owners:
+        if ctx.author.id in config.OWNERS:
             return await ctx.send(f"Yes **{ctx.author.name}** you are an admin! ✅")
 
         # Please do not remove this part.
         # I would love to be credited as the original creator of the source code.
         #   -- AlexFlipnote
         if ctx.author.id == 86477779717066752:
-            return await ctx.send(f"Well no **{ctx.author.name}**.. you still own the source code, but this is my server you know... =)")
+            return await ctx.send(f"Well no **{ctx.author.name}**.. you still own the source code partly, but this is my server you know... =)")
 
         await ctx.send(f"Sry fam, {ctx.author.name} aint no admin.")
 
