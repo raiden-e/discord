@@ -145,10 +145,10 @@ class Admin(commands.Cog):
     @commands.check(permissions.is_owner)
     async def change_playing(self, ctx, *, playing: str):
         """ Change playing status. """
-        status = config.status_type.lower()
+        status = config.STATUS_TYPE.lower()
         status_type = {"idle": discord.Status.idle, "dnd": discord.Status.dnd}
 
-        activity = config.activity_type.lower()
+        activity = config.ACTIVITY_TYPE.lower()
         activity_type = {"listening": 2, "watching": 3, "competing": 5}
 
         try:

@@ -5,7 +5,7 @@ from datetime import datetime
 
 import config
 import psutil
-from utils import default
+from utils import default, lists
 
 import discord
 from discord.ext import commands
@@ -49,7 +49,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        if not config.join_message:
+        if not config.JOIN_MESSAGE:
             return
 
         try:
@@ -59,6 +59,25 @@ class Events(commands.Cog):
             pass
         else:
             await to_send.send(config.JOIN_MESSAGE)
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        role, mods = None, None
+        mods = config.MODS
+        for mod, id in mods.items():
+            if member.guild.id == int(mod):
+                role = member.guild.get_role(id)
+            # if member.guild.id == mod
+
+        if role:
+            await member.add_roles(role)
+        else:
+            print("no member role")
+
+        channel = member.guild.system_channel
+        if channel is not None:
+            message = lists.welcome(member.display_name)
+            await channel.send(message)
 
     @commands.Cog.listener()
     async def on_command(self, ctx):
