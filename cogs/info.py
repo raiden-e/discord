@@ -15,7 +15,7 @@ class Information(commands.Cog):
         self.bot = bot
         self.process = psutil.Process(os.getpid())
 
-    @commands.command()
+    @commands.command(aliases=['test'])
     async def ping(self, ctx):
         """ Pong! """
         before = time.monotonic()
@@ -31,7 +31,7 @@ class Information(commands.Cog):
 
     @commands.command()
     async def source(self, ctx):
-        """ Check out my source code <3 """
+        """ Check out my source code =) """
         # Do not remove this command, this has to stay due to the GitHub LICENSE.
         # TL:DR, you have to disclose source according to MIT.
         # Reference: https://github.com/AlexFlipnote/discord_bot.py/blob/master/LICENSE

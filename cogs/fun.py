@@ -1,12 +1,15 @@
 import asyncio
+import concurrent.futures
 import random
 import re
 import secrets
+import time
 import urllib
 from io import BytesIO
 
 import aiohttp
 import config
+import duckduckpy
 from utils import argparser, http, lists, permissions
 
 import discord
@@ -20,7 +23,7 @@ class Fun_Commands(commands.Cog):
 
     async def randomimageapi(self, ctx, url: str, endpoint: str, token: str = None):
         try:
-            r = await http.get(url, res_method="json", no_cache=True, headers={"Authorization": token})
+            r = await http.get(url, res_method="json", no_cache=True, headers={"Authorization": config.ALEXFLIPNOTE_API})
         except aiohttp.ClientConnectorError:
             return await ctx.send("The API seems to be down...")
         except aiohttp.ContentTypeError:
@@ -30,7 +33,7 @@ class Fun_Commands(commands.Cog):
 
     async def api_img_creator(self, ctx, url: str, filename: str, content: str = None, token: str = None):
         async with ctx.channel.typing():
-            req = await http.get(url, res_method="read", headers={"Authorization": token})
+            req = await http.get(url, res_method="read", headers={"Authorization": config.ALEXFLIPNOTE_API})
 
             if not req:
                 return await ctx.send("I couldn't create the image 😥")
@@ -85,7 +88,7 @@ class Fun_Commands(commands.Cog):
     @commands.command()
     async def f(self, ctx, *, text: commands.clean_content = None):
         """ Press F to pay respect """
-        hearts = ['❤', '💛', '💚', '💙', '💜']
+        hearts = ['❤', '💛', '💚', '💙', '💜', '🖤', '🤎', '🤍', '♥']
         reason = f"for **{text}** " if text else ""
         await ctx.send(f"**{ctx.author.name}** has paid their respect {reason}{random.choice(hearts)}")
 
@@ -110,7 +113,7 @@ class Fun_Commands(commands.Cog):
         if len(inputText) > 500:
             return await ctx.send(f"**{ctx.author.name}**, the Supreme API is limited to 500 characters, sorry.")
 
-        darkorlight = ""
+        darkorlight = None
         if args.dark:
             darkorlight = "dark=true"
         if args.light:
@@ -264,6 +267,41 @@ class Fun_Commands(commands.Cog):
             await ctx.send(f"{slotmachine} 2 in a row, you won! 🎉")
         else:
             await ctx.send(f"{slotmachine} No match, you lost 😢")
+
+    @commands.command(aliases=['google', 'search'])
+    @commands.cooldown(rate=1, per=3.0, type=commands.BucketType.user)
+    async def duck(self, ctx, *, search: commands.clean_content):
+        """ Search DuckDuckGo """
+        response = None
+
+        async with ctx.channel.typing():
+            try:
+                with concurrent.futures.ThreadPoolExecutor() as _executor:
+                    future = _executor.submit(duckduckpy.query, search)
+                    response = future.result()
+            except Exception:
+                return await ctx.send("Something went wrong...")
+
+            if response.answer:
+                return await ctx.send(response.answer)
+
+            if response.abstract_source:
+                dc_response = f"From `{response.abstract_source}`:\n{response.abstract_url}"
+
+                if response.related_topics:
+                    dc_response += "\n\nOther sources:\n"
+                    for topic in response.related_topics:
+                        if isinstance(type(topic), duckduckpy.api.Result):
+                            dc_response += f"{topic.text}\n"
+                        if isinstance(type(topic), duckduckpy.api.RelatedTopic):
+                            dc_response += f"Related: {topic.name}\n"
+                return await ctx.send(dc_response)
+
+            if response.image:
+                return await ctx.send(response.image)
+
+
+            return await ctx.send("No results...")
 
 
 def setup(bot):
