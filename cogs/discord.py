@@ -13,10 +13,9 @@ from discord.ext import commands, tasks
 class Discord_Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.read_news = None
+        self.read_news = None # prevents exception when loading variable
         self.webhook_url = f"https://discordapp.com/api/webhooks/{config.NEWS_GUILD}/{config.NEWS_TOKEN}"
         self.news_task.start()
-        # cached_feed = gist.load(ARANDOMVALUE)
 
     @commands.command()
     @commands.guild_only()
@@ -168,7 +167,7 @@ class Discord_Info(commands.Cog):
                 print(f"{datestr}: {article.title}")
 
         self.read_news = potential_news
-        news.update_read("news", content=news)
+        news.update_read("news", content=self.read_news)
 
 
 def setup(bot):

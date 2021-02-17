@@ -44,6 +44,19 @@ def encoder_entry(entry):
             'text': entry.text,
             'date': entry.date.strftime("%Y%m%d%H%M%S")
         }
+
+    if isinstance(entry, list):
+        encoded_list = []
+        for article in entry:
+            if not isinstance(article, Entry):
+                raise TypeError("Must be Entry")
+            encoded_list.append({
+                'title': article.title,
+                'text': article.text,
+                'date': article.date.strftime("%Y%m%d%H%M%S")
+            })
+        return encoded_list
+
     raise TypeError("Must be Entry")
 
 
@@ -73,13 +86,14 @@ def load_read(gist_name):
     return decoder_entry(json_content)
 
 
-def update_read(filename: str = "news", content: str = None, description: str = "Added news"):
+def update_read(filename: str = "news", content: list = None, description: str = "Added news"):
     if not content:
         raise TypeError("Value must be set")
-    if not isinstance(filename, str):
+    if not isinstance(content, list):
         raise ValueError("playlist_name has to be specified")
-    if not isinstance(filename, str):
-        raise ValueError("input has to be specified")
+    for article in content:
+        if not isinstance(article, Entry):
+            raise ValueError(f"{article} is not {Entry}")
 
     init().edit(
         description=description,

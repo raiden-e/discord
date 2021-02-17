@@ -118,7 +118,7 @@ class Fun_Commands(commands.Cog):
             darkorlight = "dark=true"
         if args.light:
             darkorlight = "light=true"
-        if args.dark and args.light:
+        if all(args.dark, args.light):
             return await ctx.send(f"**{ctx.author.name}**, you can't define both --dark and --light, sorry..")
 
         await self.api_img_creator(ctx, f"https://api.alexflipnote.dev/supreme?text={inputText}&{darkorlight}", "supreme.png", token=self.alex_api_token)
