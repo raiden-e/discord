@@ -10,7 +10,7 @@ from io import BytesIO
 import aiohttp
 import config
 import duckduckpy
-from utils import argparser, http, lists, permissions
+from utils import argparser, gist, http, lists, permissions
 
 import discord
 from discord.ext import commands
@@ -42,6 +42,35 @@ class Fun_Commands(commands.Cog):
             bio.seek(0)
             await ctx.send(content=content, file=discord.File(bio, filename=filename))
 
+    @commands.command(aliases=["dis", "d"])
+    @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
+    async def disable(self, ctx, *, track: str):
+        track = track.strip()
+        if re.match(r'^[a-zA-Z0-9]{22}$', track):
+            track = f'spotify:track:{track}'
+        elif not re.match(r'^spotify:track:([a-zA-Z0-9]{22})$', track):
+            return await ctx.send("Incorrect URI format")
+
+        if ctx.author.id == 664221806642593804:
+            the_gist = "disabled.json"
+            message = "disabled"
+        else:
+            await ctx.send("I will consider that.")
+            the_gist = "by_others.json"
+            message = "considered"
+
+        disabled_tracks = gist.load(the_gist)
+        if type(disabled_tracks) is not list:
+            raise TypeError("not a list", disabled_tracks)
+        if track in disabled_tracks:
+            return await ctx.send(f"Already {message}: `{track}`")
+
+        disabled_tracks.append(track)
+
+        gist.update(the_gist, disabled_tracks,
+                    f"Added track: `{track}`")
+        return await ctx.send(f"Added track: {track}")
+
     @commands.command()
     @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
     async def cat(self, ctx):
@@ -60,18 +89,17 @@ class Fun_Commands(commands.Cog):
         """ Posts a random birb """
         await self.randomimageapi(ctx, 'https://api.alexflipnote.dev/birb', 'file', token=self.alex_api_token)
 
-    # @commands.command()
-    # @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
-    # async def duck(self, ctx):
-    #     """ Posts a random duck """
-    #     await self.randomimageapi(ctx, 'https://random-d.uk/api/v1/random', 'url')
+    @commands.command()
+    @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
+    async def duck(self, ctx):
+        """ Posts a random duck """
+        await self.randomimageapi(ctx, 'https://random-d.uk/api/v1/random', 'url')
 
-    # This does not work atm
-    # @commands.command()
-    # @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
-    # async def coffee(self, ctx):
-    #     """ Posts a random coffee """
-    #     await self.randomimageapi(ctx, 'https://coffee.alexflipnote.dev/random.json', 'file')
+    @commands.command()
+    @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
+    async def coffee(self, ctx):
+        """ Posts a random coffee """
+        await self.randomimageapi(ctx, 'https://coffee.alexflipnote.dev/random.json', 'file')
 
     @commands.command(aliases=['8ball'])
     async def eightball(self, ctx, *, question: commands.clean_content):
@@ -227,8 +255,8 @@ class Fun_Commands(commands.Cog):
             return await ctx.send(f"I would love to give beer to the bot **{ctx.author.name}**, but I don't think it will respond to you :/")
 
         beer_offer = f"**{user.name}**, you got a 🍺 offer from **{ctx.author.name}**"
-        beer_offer = beer_offer + \
-            f"\n\n**Reason:** {reason}" if reason else beer_offer
+        if reason:
+            beer_offer = f"{beer_offer}\n\n**Reason:** {reason}"
         msg = await ctx.send(beer_offer)
 
         def reaction_check(m):
@@ -268,16 +296,16 @@ class Fun_Commands(commands.Cog):
         else:
             await ctx.send(f"{slotmachine} No match, you lost 😢")
 
-    @commands.command(aliases=['google', 'search'])
+    @commands.command(aliases=['google', 'ws', 'ddg'])
     @commands.cooldown(rate=1, per=3.0, type=commands.BucketType.user)
-    async def duck(self, ctx, *, search: commands.clean_content):
+    async def search(self, ctx, *, query: commands.clean_content):
         """ Search DuckDuckGo """
         response = None
 
         async with ctx.channel.typing():
             try:
                 with concurrent.futures.ThreadPoolExecutor() as _executor:
-                    future = _executor.submit(duckduckpy.query, search)
+                    future = _executor.submit(duckduckpy.query, query)
                     response = future.result()
             except Exception:
                 return await ctx.send("Something went wrong...")
@@ -299,7 +327,6 @@ class Fun_Commands(commands.Cog):
 
             if response.image:
                 return await ctx.send(response.image)
-
 
             return await ctx.send("No results...")
 

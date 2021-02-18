@@ -4,8 +4,9 @@ from datetime import datetime
 
 import config
 import feedparser
-from github import Github, InputFileContent
 from markdownify import markdownify as md
+
+from . import gist
 
 
 class Entry:
@@ -60,14 +61,6 @@ def encoder_entry(entry):
     raise TypeError("Must be Entry")
 
 
-def get_latest_read(entrys):
-    latest = entrys[0].date
-    for entry in entrys[1:]:
-        if entry.date > latest:
-            latest = entry.date
-    return latest
-
-
 def decoder_entry(entrys):
     return [Entry(
         entry['title'],
@@ -76,14 +69,20 @@ def decoder_entry(entrys):
     ) for entry in entrys]
 
 
+def get_latest_read(entrys):
+    latest = entrys[0].date
+    for entry in entrys[1:]:
+        if entry.date > latest:
+            latest = entry.date
+    return latest
+
+
 def init():
-    return Github(config.GIST_TOKEN).get_gist(config.GIST_ID)
+    return gist.load("news")
 
 
 def load_read(gist_name):
-    x = init().files[gist_name]
-    json_content = json.loads(x.content)
-    return decoder_entry(json_content)
+    return decoder_entry(gist.load(gist_name))
 
 
 def update_read(filename: str = "news", content: list = None, description: str = "Added news"):
@@ -91,18 +90,16 @@ def update_read(filename: str = "news", content: list = None, description: str =
         raise TypeError("Value must be set")
     if not isinstance(content, list):
         raise ValueError("playlist_name has to be specified")
+
+    read = read_current()
+    update = None
     for article in content:
         if not isinstance(article, Entry):
             raise ValueError(f"{article} is not {Entry}")
-
-    init().edit(
-        description=description,
-        files={
-            f'{filename}': InputFileContent(
-                json.dumps(
-                    content,
-                    indent=2,
-                    default=encoder_entry))})
+        if not article in read:
+            update = True
+    if update:
+        gist.update("news", content, "Updated news", encoder_entry)
 
 
 def read_current():
