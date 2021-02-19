@@ -13,7 +13,7 @@ from discord.ext import commands, tasks
 class Discord_Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.read_news = None # prevents exception when loading variable
+        self.read_news = None  # prevents exception when loading variable
         self.webhook_url = f"https://discordapp.com/api/webhooks/{config.NEWS_GUILD}/{config.NEWS_TOKEN}"
         self.news_task.start()
 
@@ -100,16 +100,16 @@ class Discord_Info(commands.Cog):
     @server.command(name="avatar", aliases=["icon"])
     async def server_avatar(self, ctx):
         """ Get the current server icon """
-        if not ctx.guild.icon:
-            return await ctx.send("This server does not have a avatar...")
-        await ctx.send(f"Avatar of **{ctx.guild.name}**\n{ctx.guild.icon_url_as(size=1024)}")
+        if ctx.guild.icon:
+            await ctx.send(f"Avatar of **{ctx.guild.name}**\n{ctx.guild.icon_url_as(size=1024)}")
+        return await ctx.send("This server does not have a avatar...")
 
     @server.command(name="banner")
     async def server_banner(self, ctx):
         """ Get the current banner image """
-        if not ctx.guild.banner:
-            return await ctx.send("This server does not have a banner...")
-        await ctx.send(f"Banner of **{ctx.guild.name}**\n{ctx.guild.banner_url_as(format='png')}")
+        if ctx.guild.banner:
+            await ctx.send(f"Banner of **{ctx.guild.name}**\n{ctx.guild.banner_url_as(format='png')}")
+        return await ctx.send("This server does not have a banner...")
 
     @commands.command()
     @commands.guild_only()

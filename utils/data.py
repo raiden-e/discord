@@ -12,8 +12,8 @@ class Bot(AutoShardedBot):
     async def on_message(self, msg):
         if not self.is_ready() or msg.author.bot or not permissions.can_handle(msg, "send_messages"):
             return
-
-        await self.process_commands(msg)
+        if self.is_ready() and not msg.author.bot or not permissions.can_handle(msg, "send_messages"):
+            await self.process_commands(msg)
 
 
 class HelpFormat(DefaultHelpCommand):
@@ -37,7 +37,7 @@ class HelpFormat(DefaultHelpCommand):
             if permissions.can_handle(self.context, "add_reactions"):
                 await self.context.message.add_reaction(chr(0x2709))
         except discord.Forbidden:
-            pass
+            print(f"Can't send message {self.context.message.author}")
 
         try:
             destination = self.get_destination(no_pm=no_pm)

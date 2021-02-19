@@ -157,7 +157,7 @@ class Fun_Commands(commands.Cog):
         """ View the colour HEX details """
         async with ctx.channel.typing():
             if not permissions.can_handle(ctx, "embed_links"):
-                return await ctx.send("I can't embed in this channel ;-;")
+                return await ctx.send("I can't embed in this channel")
 
             if colour == "random":
                 colour = "%06x" % random.randint(0, 0xFFFFFF)
@@ -270,7 +270,7 @@ class Fun_Commands(commands.Cog):
             await msg.edit(content=f"**{user.name}** and **{ctx.author.name}** are enjoying a lovely beer together 🍻")
         except asyncio.TimeoutError:
             await msg.delete()
-            await ctx.send(f"well, doesn't seem like **{user.name}** wanted a beer with you **{ctx.author.name}** ;-;")
+            await ctx.send(f"well, doesn't seem like **{user.name}** wanted a beer with you **{ctx.author.name}**")
         except discord.Forbidden:
             # Yeah so, bot doesn't have reaction permission, drop the "offer" word
             beer_offer = f"**{user.name}**, you got a 🍺 from **{ctx.author.name}**"

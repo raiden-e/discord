@@ -80,9 +80,32 @@ class Moderator(commands.Cog):
 
         try:
             await ctx.guild.ban(discord.Object(id=member), reason=default.responsible(ctx.author, reason))
-            await ctx.send(default.actionmessage("banned"))
+            if not reason:
+                await ctx.send(default.actionmessage(f"Action `ban` done by `{ctx.author}` (ID: `{ctx.author.id}`"))
         except Exception as e:
             await ctx.send(e)
+
+    @commands.command()
+    @commands.guild_only()
+    @permissions.has_permissions(kick_members=True)
+    async def softban(self, ctx, member: MemberID, *, reason: ActionReason = None):
+        """Soft bans a member from the server.
+        A softban is basically banning the member from the server but
+        then unbanning the member as well. This allows you to essentially
+        kick the member while removing their messages.
+        In order for this to work, the bot must have Ban Member permissions.
+        To use this command you must have Kick Members permissions.
+        """
+        if reason is None:
+            reason = f'Action done by `{ctx.author}` (ID: `{ctx.author.id}`)'
+
+        try:
+            await ctx.guild.ban(discord.Object(id=member), reason=reason)
+            await ctx.guild.unban(discord.Object(id=member), reason=reason)
+            await ctx.message.add_reaction(chr(0x2705))
+        except Exception as e:
+            await ctx.message.add_reaction(chr(0x274C))
+            raise e
 
     @commands.command()
     @commands.guild_only()
@@ -160,7 +183,7 @@ class Moderator(commands.Cog):
             return await ctx.send("It seems like the role you attempt to mention is over your permissions, therefor I won't allow you.")
 
         if ctx.me.top_role.position <= role.position:
-            return await ctx.send("This role is above my permissions, I can't make it mentionable ;-;")
+            return await ctx.send("This role is above my permissions, I can't make it mentionable")
 
         await role.edit(mentionable=True, reason=f"[ {ctx.author} ] announcerole command")
         msg = await ctx.send(f"**{role.name}** is now mentionable, if you don't mention it within 30 seconds, I will revert the changes.")
@@ -241,7 +264,7 @@ class Moderator(commands.Cog):
             ctx, "discriminator", f"Found **{len(loop)}** on your search for **{search}**", loop
         )
 
-    @commands.group()
+    @commands.group(aliases=["purge"])
     @commands.guild_only()
     @commands.max_concurrency(1, per=commands.BucketType.guild)
     @permissions.has_permissions(manage_messages=True)
@@ -254,10 +277,7 @@ class Moderator(commands.Cog):
         if limit > 2000:
             return await ctx.send(f'Too many messages to search given ({limit}/2000)')
 
-        if not before:
-            before = ctx.message
-        else:
-            before = discord.Object(id=before)
+        before = discord.Object(id=before) if before else ctx.message
 
         if after:
             after = discord.Object(id=after)
