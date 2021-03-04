@@ -3,7 +3,6 @@ import concurrent.futures
 import random
 import re
 import secrets
-import time
 import urllib
 from io import BytesIO
 
@@ -46,9 +45,12 @@ class Fun_Commands(commands.Cog):
     @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
     async def disable(self, ctx, *, track: str):
         track = track.strip()
-        if re.match(r'^[a-zA-Z0-9]{22}$', track):
+        if re.match(lists.spotify_reg[0], track):
             track = f'spotify:track:{track}'
-        elif not re.match(r'^spotify:track:([a-zA-Z0-9]{22})$', track):
+        elif re.match(lists.spotify_reg[1], track):
+            indecies = re.match(lists.spotify_reg[1], track).span()
+            track = track[indecies[1]-22: indecies[1]]
+        elif not re.match(lists.spotify_reg[2], track):
             return await ctx.send("Incorrect URI format")
 
         if ctx.author.id == 664221806642593804:
@@ -67,8 +69,7 @@ class Fun_Commands(commands.Cog):
 
         disabled_tracks.append(track)
 
-        gist.update(the_gist, disabled_tracks,
-                    f"Added track: `{track}`")
+        gist.update(the_gist, disabled_tracks, f"Added track: `{track}`")
         return await ctx.send(f"Added track: {track}")
 
     @commands.command()

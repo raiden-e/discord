@@ -5,6 +5,12 @@ ballresponse = [
     'Perhaps'
 ]
 
+spotify_reg = [
+    r'^[a-zA-Z0-9]{22}$',
+    r'^((http|https):\/\/){0,1}open\.spotify\.com\/track\/[a-zA-Z0-9]{22}',
+    r'^spotify:track:([a-zA-Z0-9]{22})$'
+]
+
 
 def welcome(name):
     import random
