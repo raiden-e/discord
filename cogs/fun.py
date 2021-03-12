@@ -69,8 +69,8 @@ class Fun_Commands(commands.Cog):
 
         disabled_tracks.append(track)
 
-        gist.update(the_gist, disabled_tracks, f"Added track: `{track}`")
-        return await ctx.send(f"Added track: {track}")
+        gist.update(the_gist, disabled_tracks, f"Added track: {track}")
+        return await ctx.send(f"Added track: `{track}`")
 
     @commands.command()
     @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
