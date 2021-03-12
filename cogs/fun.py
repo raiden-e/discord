@@ -49,7 +49,7 @@ class Fun_Commands(commands.Cog):
             track = f'spotify:track:{track}'
         elif re.match(lists.spotify_reg[1], track):
             indecies = re.match(lists.spotify_reg[1], track).span()
-            track = track[indecies[1]-22: indecies[1]]
+            track = f"spotify:track:{track[indecies[1]-22: indecies[1]]}"
         elif not re.match(lists.spotify_reg[2], track):
             return await ctx.send("Incorrect URI format")
 
