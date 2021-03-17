@@ -26,7 +26,7 @@ class Entry:
         text = self.text
         text = text + '<br />'
         text = text.replace('*', '')
-        clean_text = text.replace('_', '')
+        clean_text = text  # .replace('_', '')
         date = self.date.strftime('%d. %B %Y - %H:%M:%S')
 
         message = message + full_title
