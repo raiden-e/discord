@@ -4,7 +4,7 @@ from datetime import datetime
 
 import config
 import psutil
-from utils import default
+from utils import default, permissions
 
 import discord
 from discord.ext import commands
@@ -43,13 +43,31 @@ class Information(commands.Cog):
     @commands.command(aliases=['supportserver', 'feedbackserver'])
     async def botserver(self, ctx):
         """ Get an invite to our support server! """
+        async def get_inv():
+            guild = self.bot.get_guild(config.INVITE[0])
+            channel = guild.get_channel(config.INVITE[1])
+            return await channel.create_invite(
+                max_age=300, max_uses=1, reason="botserver")
         try:
-            if isinstance(ctx.channel, discord.DMChannel) or ctx.guild.id != config.BOTSERVER:
-                return await ctx.send(f"**Here you go {ctx.author.name} 🍻\n<{config.BOTSERVER}>**")
-            await ctx.send(f"**{ctx.author.name}**, this is my home you know")
+            if isinstance(ctx.channel, discord.DMChannel):
+                await ctx.author.send(f"Here you go, **{ctx.author}**!\n{await get_inv()}")
+            else:
+                if ctx.guild.id == config.INVITE[0]:
+                    await ctx.send(f"**{ctx.author.name}**, this is my home you know")
+                else:
+                    await ctx.author.send(f"Here you go, **{ctx.author}**!\n{await get_inv()}")
+                    if permissions.can_handle(ctx, "add_reactions"):
+                        await ctx.message.add_reaction(chr(0x2709))
+                    else:
+                        await ctx.send("Check ur dm's")
         except AttributeError as e:
             await ctx.send(f"Where did I come from!?!")
             raise e
+
+    @commands.command(aliases=['ver'])
+    async def version(self, ctx):
+        """ Get an invite to our support server! """
+        return await ctx.send(f"Im on another level!\nversion: **{config.VERSION}**")
 
     @commands.command(aliases=['info', 'stats', 'status'])
     async def about(self, ctx):
