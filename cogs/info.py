@@ -50,12 +50,14 @@ class Information(commands.Cog):
                 max_age=300, max_uses=1, reason="botserver")
         try:
             if isinstance(ctx.channel, discord.DMChannel):
-                await ctx.author.send(f"Here you go, **{ctx.author}**!\n{await get_inv()}")
+                inv = await get_inv()
+                await ctx.author.send(f"Here you go, **{ctx.author}**!\n{inv}")
             else:
                 if ctx.guild.id == config.INVITE[0]:
                     await ctx.send(f"**{ctx.author.name}**, this is my home you know")
                 else:
-                    await ctx.author.send(f"Here you go, **{ctx.author}**!\n{await get_inv()}")
+                    inv = await get_inv()
+                    await ctx.author.send(f"Here you go, **{ctx.author}**!\n{inv}")
                     if permissions.can_handle(ctx, "add_reactions"):
                         await ctx.message.add_reaction(chr(0x2709))
                     else:
