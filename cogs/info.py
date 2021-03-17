@@ -43,9 +43,13 @@ class Information(commands.Cog):
     @commands.command(aliases=['supportserver', 'feedbackserver'])
     async def botserver(self, ctx):
         """ Get an invite to our support server! """
-        if isinstance(ctx.channel, discord.DMChannel) or ctx.guild.id != 86484642730885120:
-            return await ctx.send(f"**Here you go {ctx.author.name} 🍻\n<{config.BOTSERVER}>**")
-        await ctx.send(f"**{ctx.author.name}** this is my home you know :3")
+        try:
+            if isinstance(ctx.channel, discord.DMChannel) or ctx.guild.id != config.BOTSERVER:
+                return await ctx.send(f"**Here you go {ctx.author.name} 🍻\n<{config.BOTSERVER}>**")
+            await ctx.send(f"**{ctx.author.name}**, this is my home you know")
+        except AttributeError as e:
+            await ctx.send(f"Where did I come from!?!")
+            raise e
 
     @commands.command(aliases=['info', 'stats', 'status'])
     async def about(self, ctx):

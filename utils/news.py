@@ -1,8 +1,6 @@
-import json
 import time
 from datetime import datetime
 
-import config
 import feedparser
 from markdownify import markdownify as md
 
@@ -85,7 +83,7 @@ def load_read(gist_name):
     return decoder_entry(gist.load(gist_name))
 
 
-def update_read(filename: str = "news", content: list = None, description: str = "Added news"):
+def update_read(filename: str = "news", content: list = None, description: str = "Updated news"):
     if not content:
         raise TypeError("Value must be set")
     if not isinstance(content, list):
@@ -99,7 +97,7 @@ def update_read(filename: str = "news", content: list = None, description: str =
         if not article in read:
             update = True
     if update:
-        gist.update("news", content, "Updated news", encoder_entry)
+        gist.update(filename, content, description, encoder_entry)
 
 
 def read_current():
@@ -109,12 +107,8 @@ def read_current():
 
     formatted_entries = []
     for entry in entries:
-        title = entry['title']
-        text = entry['summary']
-        timestamp = entry['published_parsed']
-        date = datetime.fromtimestamp(time.mktime(timestamp))
-        new_entry = Entry(title, text, date)
-
+        date = datetime.fromtimestamp(time.mktime(entry['published_parsed']))
+        new_entry = Entry(entry['title'],  entry['summary'], date)
         formatted_entries.append(new_entry)
 
     return formatted_entries

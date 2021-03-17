@@ -2,7 +2,6 @@ import json
 import os
 
 import config
-
 import discord
 from utils.data import Bot, HelpFormat
 
@@ -26,7 +25,6 @@ try:
     if not config.TOKEN == None:
         bot.run(config.TOKEN)
     else:
-        import json
         with os.environ.get('config') as cfg:
             config = json.dumps(cfg)
             bot.run(config['token'])
