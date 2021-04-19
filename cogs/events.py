@@ -76,7 +76,7 @@ class Events(commands.Cog):
 
         channel = member.guild.system_channel
         if channel is not None:
-            message = lists.welcome(member.display_name)
+            message = lists.welcome(member)
             await channel.send(message)
 
     @commands.Cog.listener()
