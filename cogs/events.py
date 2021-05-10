@@ -67,7 +67,6 @@ class Events(commands.Cog):
         for mod, id in mods.items():
             if member.guild.id == int(mod):
                 role = member.guild.get_role(id)
-            # if member.guild.id == mod
 
         if role:
             await member.add_roles(role)

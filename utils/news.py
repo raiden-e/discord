@@ -101,7 +101,7 @@ def update_read(filename: str = "news", content: list = None, description: str =
 
 
 def read_current():
-    url = 'http://www.inf.fh-dortmund.de/rss.php'
+    url = 'https://gatekeeper-ng.informatik.fh-dortmund.de/aktuelles/aktuelles_feed' # was 'http://www.inf.fh-dortmund.de/rss.php'
     rss_content = feedparser.parse(url)
     entries = rss_content['entries']
 
