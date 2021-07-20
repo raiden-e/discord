@@ -87,7 +87,7 @@ def update_read(filename: str = "news", content: list = None, description: str =
     if not content:
         raise TypeError("Value must be set")
     if not isinstance(content, list):
-        raise ValueError("playlist_name has to be specified")
+        raise ValueError("news has to be specified")
 
     read = read_current()
     update = None
@@ -98,6 +98,8 @@ def update_read(filename: str = "news", content: list = None, description: str =
             update = True
     if update:
         gist.update(filename, content, description, encoder_entry)
+    else:
+        print("Gist: up to date")
 
 
 def read_current():

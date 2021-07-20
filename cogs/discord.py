@@ -139,11 +139,11 @@ class Discord_Info(commands.Cog):
     @tasks.loop(hours=1)
     async def news_task(self):
         '''Get news from fhdo'''
-        carrier = news
+        # carrier = news
         if not self.read_news:
             self.read_news = news.load_read(gist_name="news")
         latest_read = news.get_latest_read(self.read_news)
-        potential_news = carrier.read_current()
+        potential_news = news.read_current()
         breaking = []
         tz = pytz.timezone('Europe/Berlin')
         datestr = datetime.now().astimezone(tz).strftime('%Y-%m-%d %H:%m:%S')
@@ -164,7 +164,7 @@ class Discord_Info(commands.Cog):
 
             for article in breaking:
                 await webhook.send(article)
-                print(f"{datestr}: {article.title}")
+                print(f"{datestr}: sending {article.title}")
 
         self.read_news = potential_news
         news.update_read("news", content=self.read_news)

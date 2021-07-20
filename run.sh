@@ -1,5 +1,6 @@
 #!/bin/bash
 
-printf '%s\n' "$config" >config.py
+if [ ! -d "$config" ]; then printf '%s\n' "$config" >config.py fi;
+
 
 python3 -m index.py
