@@ -9,3 +9,4 @@ feedparser >= 5.2.1
 markdownify==0.4.1
 pytz
 duckduckpy
+spotipy

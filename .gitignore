@@ -3,6 +3,7 @@ config.json
 cogs/eval.py
 config_backup.json
 config.py
+utils/spotify.cache
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

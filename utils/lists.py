@@ -7,9 +7,11 @@ ballresponse = [
 ]
 
 spotify_reg = [
-    r'^[a-zA-Z0-9]{22}$',
+    r'^[a-zA-Z0-9]{22}$', # assume track
+    r'^((http|https):\/\/){0,1}open\.spotify\.com\/album\/[a-zA-Z0-9]{22}',
     r'^((http|https):\/\/){0,1}open\.spotify\.com\/track\/[a-zA-Z0-9]{22}',
-    r'^spotify:track:([a-zA-Z0-9]{22})$'
+    r'^spotify:album:([a-zA-Z0-9]{22})$',
+    r'^spotify:track:([a-zA-Z0-9]{22})$',
 ]
 
 

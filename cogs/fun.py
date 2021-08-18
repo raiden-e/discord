@@ -5,6 +5,7 @@ import re
 import secrets
 import urllib
 from io import BytesIO
+from pprint import pformat
 
 import aiohttp
 import config
@@ -44,33 +45,56 @@ class Fun_Commands(commands.Cog):
     @commands.command(aliases=["dis", "d"])
     @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
     async def disable(self, ctx, *, track: str):
+        async def get_album(uri: str):
+            from utils import spotify
+            _spotify = spotify.get_spotify_client()
+            return _spotify.album_tracks(album_id=uri)
+        album = None
         track = track.strip()
-        if re.match(lists.spotify_reg[0], track):
+        if re.match(lists.spotify_reg[0], track):  # Bare ID
             track = f'spotify:track:{track}'
-        elif re.match(lists.spotify_reg[1], track):
+        elif re.match(lists.spotify_reg[1], track):  # link album
             indecies = re.match(lists.spotify_reg[1], track).span()
+            album = await get_album(str(track[indecies[1]-22: indecies[1]]))
+        elif re.match(lists.spotify_reg[2], track):  # link track
+            indecies = re.match(lists.spotify_reg[2], track).span()
             track = f"spotify:track:{track[indecies[1]-22: indecies[1]]}"
-        elif not re.match(lists.spotify_reg[2], track):
+        elif re.match(lists.spotify_reg[3], track):  # URI Album
+            indecies = re.match(lists.spotify_reg[3], track).span()
+            album = await get_album(str(track[indecies[1]-22: indecies[1]]))
+        elif not re.match(lists.spotify_reg[4], track):  # URI Track
             return await ctx.send("Incorrect URI format")
 
         if ctx.author.id == 664221806642593804:
             the_gist = "disabled.json"
-            message = "disabled"
+            message2 = "disabled"
         else:
             await ctx.send("I will consider that.")
             the_gist = "by_others.json"
-            message = "considered"
+            message2 = "considered"
 
         disabled_tracks = gist.load(the_gist)
         if type(disabled_tracks) is not list:
             raise TypeError("not a list", disabled_tracks)
-        if track in disabled_tracks:
-            return await ctx.send(f"Already {message}: `{track}`")
 
-        disabled_tracks.append(track)
+        message = "Added track"
 
-        gist.update(the_gist, disabled_tracks, f"Added track: {track}")
-        return await ctx.send(f"Added track: `{track}`")
+        if album is not None:
+            message += "s:\n"
+            for x in album["items"]:
+                if x['uri'] not in disabled_tracks:
+                    disabled_tracks.append(x['uri'])
+                    message += f"`{x['uri']}`\n"
+        elif track in disabled_tracks:
+            return await ctx.send(f"Already {message2}: `{track}`")
+        else:
+            message += f": `{track}`"
+            disabled_tracks.append(track)
+
+        gist.update(the_gist, disabled_tracks, message)
+
+
+        return await ctx.send(message)
 
     @commands.command()
     @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
