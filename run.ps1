@@ -5,7 +5,7 @@ try {
     }
 }
 catch {
-    throw "Python is not installed"
+    throw 'Python is not installed'
 }
 if (!(Test-Path -Path "$PSScriptRoot\venv" -PathType Container)) {
     python.exe -m virtualenv venv
@@ -15,4 +15,4 @@ if (!(Test-Path -Path "$PSScriptRoot\venv" -PathType Container)) {
 
 python.exe -m pip install -U pip
 python.exe -m pip install -U -r "requirements.txt"
-python.exe index.py
+python.exe -m index.py

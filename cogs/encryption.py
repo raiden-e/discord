@@ -3,7 +3,6 @@ import binascii
 import codecs
 from io import BytesIO
 
-import config
 from utils import default, http
 
 import discord

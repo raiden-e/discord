@@ -10,3 +10,4 @@ markdownify==0.4.1
 pytz
 duckduckpy
 spotipy
+praw

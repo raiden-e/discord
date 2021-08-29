@@ -1,9 +1,17 @@
-import json
 import os
 
-import config
 import discord
 from utils.data import Bot, HelpFormat
+
+config_json = False
+try:
+    import config
+except ImportError:
+    if os.environ.get('config'):
+        raise ImportError("Can not load config")
+    import json
+    config = json.dumps(os.environ.get('config'))
+    config_json = True
 
 print("Logging in...")
 
@@ -18,15 +26,9 @@ bot = Bot(
 
 for file in os.listdir("cogs"):
     if file.endswith(".py"):
-        name = file[:-3]
-        bot.load_extension(f"cogs.{name}")
+        bot.load_extension(f"cogs.{file[:-3]}")
 
 try:
-    if not config.TOKEN == None:
-        bot.run(config.TOKEN)
-    else:
-        with os.environ.get('config') as cfg:
-            config = json.dumps(cfg)
-            bot.run(config['token'])
+    bot.run(config['token'] if config_json else config.TOKEN)
 except Exception as e:
-    print(f'Error when logging in: {e}')
+    print(f'Error when logging in:\n{e}')

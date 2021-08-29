@@ -1,3 +1,8 @@
+try:
+    import config
+except ImportError:
+    raise "Please make sure you have a config file"
+
 import asyncio
 import concurrent.futures
 import random
@@ -5,12 +10,11 @@ import re
 import secrets
 import urllib
 from io import BytesIO
-from pprint import pformat
 
 import aiohttp
-import config
 import duckduckpy
-from utils import argparser, gist, http, lists, permissions
+import praw
+from utils import argparser, gist, http, lists, permissions, playlist
 
 import discord
 from discord.ext import commands
@@ -20,6 +24,10 @@ class Fun_Commands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.alex_api_token = config.ALEXFLIPNOTE_API
+        self._spotify = None
+        self.reddit = praw.Reddit(client_id=config.PRAW_ID,
+                                  client_secret=config.PRAW_SC,
+                                  user_agent=config.PRAW_UA)
 
     async def randomimageapi(self, ctx, url: str, endpoint: str, token: str = None):
         try:
@@ -42,14 +50,30 @@ class Fun_Commands(commands.Cog):
             bio.seek(0)
             await ctx.send(content=content, file=discord.File(bio, filename=filename))
 
+    @commands.command()
+    async def meme(self, ctx):
+        memes_submissions = self.reddit.subreddit('memes').hot()
+        for _ in range(0, random.randint(1, 10)):
+            submission = next(x for x in memes_submissions if not x.stickied)
+
+        return await ctx.send(submission.url)
+
     @commands.command(aliases=["dis", "d"])
     @commands.cooldown(rate=1, per=1.5, type=commands.BucketType.user)
     async def disable(self, ctx, *, track: str):
         async def get_album(uri: str):
+            return _spotify.album_tracks(album_id=uri)
+
+        # im using a different method to disable a ding now
+        await ctx.send("The Disabled function is not used anymore. please goto:\nhttps://open.spotify.com/playlist/0v4TILTzA7dqpid5AvaGz3")
+
+        if self._spotify is None:
             from utils import spotify
             _spotify = spotify.get_spotify_client()
-            return _spotify.album_tracks(album_id=uri)
+
+        disable_playlist = '0v4TILTzA7dqpid5AvaGz3'
         album = None
+
         track = track.strip()
         if re.match(lists.spotify_reg[0], track):  # Bare ID
             track = f'spotify:track:{track}'
@@ -65,34 +89,20 @@ class Fun_Commands(commands.Cog):
         elif not re.match(lists.spotify_reg[4], track):  # URI Track
             return await ctx.send("Incorrect URI format")
 
-        if ctx.author.id == 664221806642593804:
-            the_gist = "disabled.json"
-            message2 = "disabled"
-        else:
-            await ctx.send("I will consider that.")
-            the_gist = "by_others.json"
-            message2 = "considered"
+        if ctx.author.id != 664221806642593804:
+            return await ctx.send("You are not allowed to do that")
 
-        disabled_tracks = gist.load(the_gist)
-        if type(disabled_tracks) is not list:
-            raise TypeError("not a list", disabled_tracks)
-
+        disabled_tracks = playlist.getAsync(_spotify, )
         message = "Added track"
 
-        if album is not None:
+        if album:
             message += "s:\n"
-            for x in album["items"]:
-                if x['uri'] not in disabled_tracks:
-                    disabled_tracks.append(x['uri'])
-                    message += f"`{x['uri']}`\n"
+            playlist.addAsync(_spotify, album['items'], disable_playlist)
         elif track in disabled_tracks:
-            return await ctx.send(f"Already {message2}: `{track}`")
+            return await ctx.send(f"Already disabled: `{track}`")
         else:
             message += f": `{track}`"
-            disabled_tracks.append(track)
-
-        gist.update(the_gist, disabled_tracks, message)
-
+            playlist.addAsync(_spotify, [track], disable_playlist)
 
         return await ctx.send(message)
 

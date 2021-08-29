@@ -20,8 +20,7 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, err):
         if isinstance(err, errors.MissingRequiredArgument) or isinstance(err, errors.BadArgument):
-            helper = str(ctx.invoked_subcommand) if ctx.invoked_subcommand else str(
-                ctx.command)
+            helper = str(ctx.invoked_subcommand) if ctx.invoked_subcommand else str(ctx.command)
             await ctx.send_help(helper)
 
         elif isinstance(err, errors.CommandInvokeError):
@@ -30,10 +29,9 @@ class Events(commands.Cog):
             if "2000 or fewer" in str(err) and len(ctx.message.clean_content) > 1900:
                 return await ctx.send(
                     "You attempted to make the command display more than 2,000 characters...\n"
-                    "Both error and command will be ignored."
                 )
 
-            await ctx.send(f"There was an error processing the command ☹\n{error}")
+            await ctx.send(f"There was an error processing the command ☹\n{error}"[:2000])
 
         elif isinstance(err, errors.CheckFailure):
             pass
@@ -79,12 +77,16 @@ class Events(commands.Cog):
             await channel.send(message)
 
     @commands.Cog.listener()
+    async def on_message(self, ctx):
+        if ctx.channel.id == 878011620612272158 and not ctx.author.bot:
+            return await ctx.channel.send("ogö")
+
+    @commands.Cog.listener()
     async def on_command(self, ctx):
         try:
             print(f"{ctx.guild.name} > {ctx.author} > {ctx.message.clean_content}")
         except AttributeError:
-            print(
-                f"Private message > {ctx.author} > {ctx.message.clean_content}")
+            print(f"Private message > {ctx.author} > {ctx.message.clean_content}")
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -101,9 +103,7 @@ class Events(commands.Cog):
         activity_type = {"listening": 2, "watching": 3, "competing": 5}
 
         await self.bot.change_presence(
-            activity=discord.Game(
-                type=activity_type.get(activity, 0), name=config.ACTIVITY
-            ),
+            activity=discord.Game(type=activity_type.get(activity, 0), name=config.ACTIVITY),
             status=status_type.get(status, discord.Status.online)
         )
 
